@@ -1,0 +1,149 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}DDCET Exam Live{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        
+        <div class="alert alert-warning text-end shadow-sm sticky-top mb-3" style="top: 80px; z-index: 100;">
+            <h4 class="mb-0 text-danger fw-bold">
+                ⏳ Time Left: <span id="timer-display">02:30:00</span>
+            </h4>
+        </div>
+        <div class="alert alert-info text-center mb-4 shadow-sm">
+            <strong>Note:</strong> Every correct answer carries +1 mark. <strong>-0.25 marks</strong> will be deducted for each wrong answer.
+        </div>
+
+        <form method="POST" id="quiz-form">
+            {% csrf_token %}
+            
+          {% for q in questions %}
+                <input type="hidden" name="question_ids" value="{{ q.id }}">
+                
+                <div class="card shadow mb-4 border-0 question-step" id="step-{{ forloop.counter0 }}" style="display: none; border-radius: 15px;">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-2" style="border-radius: 15px 15px 0 0;">
+                        <h4 class="fw-bold text-dark text-center">
+                            <span class="badge bg-primary me-2 shadow-sm">Q {{ forloop.counter }} of {{ questions|length }}</span> 
+                            <span class="badge bg-secondary shadow-sm">{{ q.subject }}</span> 
+                        </h4>
+                    </div>
+                    
+                    <div class="card-body px-4 pb-4">
+                        <div class="row">
+                            <div class="col-md-6 border-end border-2 pe-4">
+                                <h4 class="mb-4 lh-base text-dark">{{ q.question_text }}</h4>
+                                
+                                <div class="form-check mb-3 custom-radio">
+                                    <input class="form-check-input" type="radio" name="question_{{ q.id }}" value="A" id="q{{ q.id }}A">
+                                    <label class="form-check-label ms-2 fs-5" for="q{{ q.id }}A">A. {{ q.option_a }}</label>
+                                </div>
+                                <div class="form-check mb-3 custom-radio">
+                                    <input class="form-check-input" type="radio" name="question_{{ q.id }}" value="B" id="q{{ q.id }}B">
+                                    <label class="form-check-label ms-2 fs-5" for="q{{ q.id }}B">B. {{ q.option_b }}</label>
+                                </div>
+                                <div class="form-check mb-3 custom-radio">
+                                    <input class="form-check-input" type="radio" name="question_{{ q.id }}" value="C" id="q{{ q.id }}C">
+                                    <label class="form-check-label ms-2 fs-5" for="q{{ q.id }}C">C. {{ q.option_c }}</label>
+                                </div>
+                                <div class="form-check mb-3 custom-radio">
+                                    <input class="form-check-input" type="radio" name="question_{{ q.id }}" value="D" id="q{{ q.id }}D">
+                                    <label class="form-check-label ms-2 fs-5" for="q{{ q.id }}D">D. {{ q.option_d }}</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 ps-4">
+                                <h4 class="mb-4 lh-base text-primary">{{ q.question_text_guj }}</h4>
+                                
+                                <div class="mb-3 ps-4">
+                                    <label class="ms-2 fs-5 text-muted">A. {{ q.option_a_guj }}</label>
+                                </div>
+                                <div class="mb-3 ps-4">
+                                    <label class="ms-2 fs-5 text-muted">B. {{ q.option_b_guj }}</label>
+                                </div>
+                                <div class="mb-3 ps-4">
+                                    <label class="ms-2 fs-5 text-muted">C. {{ q.option_c_guj }}</label>
+                                </div>
+                                <div class="mb-3 ps-4">
+                                    <label class="ms-2 fs-5 text-muted">D. {{ q.option_d_guj }}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-between align-items-center mt-4 mb-5 p-3 bg-white shadow-sm" style="border-radius: 15px;">
+                <button type="button" class="btn btn-outline-secondary btn-lg rounded-pill px-4 fw-bold" id="prev-btn" onclick="changeQuestion(-1)">
+                    ⬅ Previous
+                </button>
+                <button type="button" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow" id="next-btn" onclick="changeQuestion(1)">
+                    Next ➡
+                </button>
+                <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 shadow" id="submit-btn" style="display: none;">
+                    Submit Exam ✅
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentQuestion = 0;
+    const totalQuestions = {{ questions|length }};
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+
+    function showQuestion(index) {
+        document.querySelectorAll('.question-step').forEach(el => el.style.display = 'none');
+        document.getElementById('step-' + index).style.display = 'block';
+
+        if(index === 0) { prevBtn.style.display = 'none'; } 
+        else { prevBtn.style.display = 'block'; }
+
+        if(index === totalQuestions - 1) {
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+        } else {
+            nextBtn.style.display = 'block';
+            submitBtn.style.display = 'none';
+        }
+    }
+
+    function changeQuestion(step) {
+        currentQuestion += step;
+        showQuestion(currentQuestion);
+        window.scrollTo(0, 0); 
+    }
+
+    showQuestion(0);
+
+    let timeInMinutes = 150; 
+    let timeInSeconds = timeInMinutes * 60;
+    let timerDisplay = document.getElementById('timer-display');
+    let quizForm = document.getElementById('quiz-form');
+
+    let countdown = setInterval(function() {
+        let hours = Math.floor(timeInSeconds / 3600);
+        let minutes = Math.floor((timeInSeconds % 3600) / 60);
+        let seconds = timeInSeconds % 60;
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+
+        timerDisplay.innerText = hours + ":" + minutes + ":" + seconds;
+
+        if (timeInSeconds <= 0) {
+            clearInterval(countdown);
+            alert("Time is up! Your exam is being submitted automatically."); 
+            quizForm.submit();
+        } else {
+            timeInSeconds--;
+        }
+    }, 1000);
+</script>
+{% endblock %}

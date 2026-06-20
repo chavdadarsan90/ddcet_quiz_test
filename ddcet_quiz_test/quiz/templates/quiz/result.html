@@ -1,0 +1,61 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}Exam Results{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        
+        <div class="card shadow p-5 text-center border-0 rounded-4 mb-5">
+            <h2 class="text-primary fw-bold mb-4">Exam Completed!</h2>
+            
+            <div class="row text-center mb-4">
+                <div class="col-4">
+                    <h5 class="text-muted">Total</h5>
+                    <h3 class="fw-bold">{{ total }}</h3>
+                </div>
+                <div class="col-4">
+                    <h5 class="text-success">Correct</h5>
+                    <h3 class="text-success fw-bold">{{ correct }}</h3>
+                </div>
+                <div class="col-4">
+                    <h5 class="text-danger">Wrong</h5>
+                    <h3 class="text-danger fw-bold">{{ wrong }}</h3>
+                </div>
+            </div>
+
+            <div class="p-3 bg-light rounded-3 border">
+                <p class="text-muted fs-5 mb-1">Your Final Score (with Negative Marking):</p>
+                <h1 class="display-2 text-primary fw-bold my-2">{{ score }} <span class="text-dark fs-3">/ {{ total }}</span></h1>
+            </div>
+            
+            <div class="mt-4">
+                <a href="/" class="btn btn-primary rounded-pill px-4 me-2 shadow-sm">Take Exam Again</a>
+                <a href="/dashboard/" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">My Dashboard</a>
+            </div>
+        </div>
+
+        <h3 class="fw-bold mb-4 text-secondary">Detailed Answer Review</h3>
+        
+        {% for item in review_data %}
+            <div class="card shadow-sm mb-4 border-0 rounded-4">
+                <div class="card-body">
+                    <h5 class="mb-3 text-dark"><strong>Q:</strong> {{ item.question.question_text }}</h5>
+                    
+                    <div class="p-2 mb-2 rounded {% if item.status == 'Correct ✅' %}bg-success text-white{% elif item.status == 'Wrong ❌' %}bg-danger text-white{% else %}bg-warning text-dark{% endif %}">
+                        <strong>Your Answer:</strong> Option {{ item.selected_option }} ({{ item.status }})
+                    </div>
+
+                    {% if item.status != 'Correct ✅' %}
+                    <div class="p-2 bg-light border border-success rounded text-success">
+                        <strong>Correct Answer:</strong> Option {{ item.correct_answer }}
+                    </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}

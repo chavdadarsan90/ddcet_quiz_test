@@ -1,0 +1,120 @@
+{% extends 'quiz/base.html' %}
+
+{% block content %}
+<style>
+    /* 1. A stunning, vibrant fluid abstract background */
+    .glass-wrapper {
+        background-color: #0f172a; 
+        background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        min-height: 90vh; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* 2. Premium Frosted Glass Effect */
+    .glass-card {
+        background: rgba(25, 25, 35, 0.25); /* Darker tint makes the vibrant background pop */
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 24px;
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        color: white;
+    }
+
+    .glass-card h2 {
+        font-weight: 700;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+    }
+
+    /* 3. Smooth Input Fields */
+    .glass-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        border-radius: 25px;
+        padding: 12px 20px;
+        transition: all 0.3s ease;
+    }
+
+    .glass-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.8);
+        color: white;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    /* 4. Beautiful Gradient Login Button */
+    .glass-btn {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        color: white;
+        border-radius: 25px;
+        padding: 12px;
+        font-weight: bold;
+        transition: 0.3s;
+        border: none;
+    }
+
+    .glass-btn:hover {
+        background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+        color: white;
+    }
+
+    /* 5. Links */
+    .glass-link {
+        color: #c084fc;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .glass-link:hover {
+        text-decoration: underline;
+        color: #d8b4fe;
+    }
+</style>
+
+<div class="glass-wrapper">
+    <div class="glass-card text-center">
+        <h2>Student Login</h2>
+        
+        <form method="POST" action="">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <input type="text" name="username" class="form-control glass-input" placeholder="Username" required>
+            </div>
+            
+            <div class="mb-4">
+                <input type="password" name="password" class="form-control glass-input" placeholder="Password" required>
+            </div>
+
+            <div class="mb-4 px-2 text-start" style="font-size: 0.85rem;">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe" style="color: rgba(255,255,255,0.8);">Remember me</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn glass-btn w-100 mb-4">Login</button>
+            
+            <p class="mb-0" style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">
+                Don't have an account? <a href="{% url 'register' %}" class="glass-link fw-bold">Register</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}
