@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-#n(%)z4u1l)v(5tnv*u)!zk1gz0y0zl5ea#%tsivcyiv+#nl)r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Look for ALLOWED_HOSTS in your settings.py and change it to:
+ALLOWED_HOSTS = ['ddcet-quiz-test.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
